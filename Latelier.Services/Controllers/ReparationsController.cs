@@ -1,7 +1,7 @@
 ﻿using Latelier.Services.Models;
+using Latelier.Services.Requests;
 using Latelier.Services.Services;
 using Microsoft.AspNetCore.Mvc;
-using System.Xml;
 
 namespace Latelier.Services.Controllers
 {
@@ -9,7 +9,7 @@ namespace Latelier.Services.Controllers
     [Route("[controller]")]
     public class ReparationsController : ControllerBase
     {
-        #region Réparations
+        #region Réparations API
 
         [HttpGet]
         public ActionResult<List<Reparation>> Reparations()
@@ -30,6 +30,10 @@ namespace Latelier.Services.Controllers
             return rep;
         }
 
+        [HttpPost("SearchReparations")]
+        public ActionResult<List<Reparation>> SearchReparations(SearchReparationsRequest request)
+            => DataServices.SearchReparations(request);
+
         /// <summary>
         /// sauvegarde d'une réparation
         /// </summary>
@@ -38,7 +42,7 @@ namespace Latelier.Services.Controllers
         [HttpPost("Add")]
         public IActionResult SaveReparation(Reparation reparation)
         {
-            // ici par exemple on peut valider que les données envoyés sont correctes
+            // ici par exemple on peut valider que les donnés envoyées sont correctes
             if (!ValidateDatas(reparation))
                 return BadRequest();
 
@@ -46,10 +50,10 @@ namespace Latelier.Services.Controllers
             //  - que la tache et le matériel correspondent
             //  - que les pièces à changer correspondent au matériel
             // etc...
-            // évidement cela n'empêche pas de faire des choses côté frontend pour s'assurer d'avoir des données correctes ici
+            // évidement cela n'empêche pas de faire des choses côté consommateur pour s'assurer d'avoir des données correctes ici
 
             var tache = DataServices.GetTache(reparation.TacheId);
-            reparation.Prix = tache.PrixCalcule;
+            reparation.Prix = tache?.PrixCalcule;
 
             // sauvegarde
             DataServices.Add(reparation);
@@ -65,7 +69,7 @@ namespace Latelier.Services.Controllers
         [HttpPut("Update/{id}")]
         public IActionResult UpdateReparation(int id, Reparation reparation)
         {
-            if (id != reparation.Id)
+            if (id != reparation.Id || !ValidateDatas(reparation))
                 return BadRequest();
 
             var existingRep = DataServices.Get(id);
@@ -81,17 +85,14 @@ namespace Latelier.Services.Controllers
         /// </summary>
         /// <param name="reparation"></param>
         /// <returns></returns>
-        private bool ValidateDatas(Reparation reparation)
+        private static bool ValidateDatas(Reparation reparation)
         {
             var materiel = DataServices.GetMateriel(reparation.NumSerieMateriel);
             var tache = DataServices.GetTache(reparation.TacheId);
+            var client = DataServices.GetClient(reparation.ClientId);
 
-            return materiel != null && tache != null;
+            return materiel != null && tache != null && client != null;
         }
-
-        #endregion
-
-        #region Monitoring
 
         #endregion
     }

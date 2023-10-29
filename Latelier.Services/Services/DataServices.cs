@@ -1,5 +1,8 @@
 ﻿using Latelier.Services.Models;
 using Latelier.Services.Models.Enums;
+using Latelier.Services.Requests;
+using Latelier.Services.Extensions;
+using Microsoft.VisualBasic;
 
 namespace Latelier.Services.Services
 {
@@ -18,6 +21,10 @@ namespace Latelier.Services.Services
 
         static DataServices()
         {
+            // Ajout de données de tests
+            // Attention les données ne sont pas forcement pertinentes et cohérentes
+            // à remplacer par une base de données + tard
+
             Techniciens = new List<Technicien>
             {
                 new Technicien(1, "Jean", "Valjean"),
@@ -31,9 +38,9 @@ namespace Latelier.Services.Services
                 new Client(2, "Bob", "Lennon", "bob.lennon@gmail.com", "06.64.32.42.00")
             };
 
-            var pieces = new [] {
+            var pieces = new[] {
                 new Piece(2, "Plaquettes de frein", 50, MaterielTypeEnum.Velo),
-                new Piece(3, "Pneu", 25, MaterielTypeEnum.Velo) 
+                new Piece(3, "Pneu", 25, MaterielTypeEnum.Velo)
             };
             Taches = new List<Tache>
             {
@@ -55,17 +62,47 @@ namespace Latelier.Services.Services
 
             Reparations = new List<Reparation>
             {
-                new Reparation(1, 1, 1, 1, DateTime.Now, null, "052413N4")
+                new Reparation(1, 1, 1, 1, DateTime.Now, null, "052413N4"),
+                new Reparation(2, 1, 1, 1, DateTime.Now, DateTime.Now.AddDays(1), "12F45HJ"),
+                new Reparation(3, 2, 2, 1, DateTime.Now, DateTime.Now.AddDays(2), "E6F4E3F5"),
             };
         }
 
         public static List<Reparation> GetAll() => Reparations;
+
+        public static List<Reparation> SearchReparations(SearchReparationsRequest request)
+        {
+            if (request == null)
+                return new List<Reparation>();
+
+            // si on filtre sur des identifiants, on retourne le resultat directement
+            if (!request.Ids.IsNullOrEmpty())
+                return Reparations.Where(r => request.Ids.Contains(r.Id)).ToList();
+
+            // sinon on applique les autres filtres
+            var reparations = Reparations.AsEnumerable();
+
+            if (!request.TechniciensIds.IsNullOrEmpty())
+                reparations = reparations.Where(r => request.TechniciensIds.Contains(r.TechnicienId));
+
+            if (!string.IsNullOrWhiteSpace(request.Omnibox))
+            {
+                reparations = reparations.Where(r => r.NumSerieMateriel.ToUpper().Contains(request.Omnibox.ToUpper()));
+                // dans un monde ou la classe/entité inclues les autres classes/entitées, continuer la recherche sur les autres champs texte...
+            }
+
+            // appliquer les autres filtres ...
+
+            return reparations.ToList();
+        }
 
         public static Reparation? Get(int id) => Reparations.FirstOrDefault(p => p.Id == id);
 
         public static Materiel? GetMateriel(string numSerie) => Materiels.FirstOrDefault(m => m.NumSerie == numSerie);
 
         public static Tache? GetTache(int id) => Taches.FirstOrDefault(m => m.Id == id);
+
+        public static Client? GetClient(int id) => Clients.FirstOrDefault(c => c.Id == id);
 
         public static void Add(Reparation rep)
         {

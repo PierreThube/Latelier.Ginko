@@ -1,4 +1,6 @@
 using Latelier.Services.Controllers;
+using Latelier.Services.Models;
+using Latelier.Services.Requests;
 using Latelier.Services.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -49,6 +51,26 @@ namespace Latelier.Services.Tests
             var result = services.SearchReparationById(nextId);
             Assert.IsNotNull(result);
             Assert.IsInstanceOfType(result.Result, typeof(NotFoundResult));
+        }
+
+        [TestMethod]
+        public void SaveReparation_ShouldBeOk()
+        {
+            var reparation = new Reparation(1, 1, 1, 1, DateTime.Now, null, "052413N4");
+
+            var services = new ReparationsController();
+            var result = services.SaveReparation(reparation);
+            Assert.IsNotNull(((result as CreatedAtActionResult)?.Value as Reparation)?.Id != 0);
+        }
+
+        [TestMethod]
+        public void SearchReparations()
+        {
+            var request = new SearchReparationsRequest().WithTechniciensIds(1);
+            var services = new ReparationsController();
+            var result = services.SearchReparations(request);
+            Assert.IsNotNull(result?.Value);
+            Assert.IsTrue(result.Value.All(r => r.TechnicienId == 1));
         }
     }
 }

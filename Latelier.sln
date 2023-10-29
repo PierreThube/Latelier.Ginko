@@ -5,7 +5,7 @@ VisualStudioVersion = 17.7.34221.43
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Latelier.Services", "Latelier.Services\Latelier.Services.csproj", "{454A8D2B-0732-44E5-AC6C-DB667B15CBCF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Latelier.Services.Tests", "Latelier.Services.Tests\Latelier.Services.Tests.csproj", "{D711B2FF-050A-455F-8DDA-ACCD8897712F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Latelier.Services.Tests", "Latelier.Services.Tests\Latelier.Services.Tests.csproj", "{D711B2FF-050A-455F-8DDA-ACCD8897712F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
