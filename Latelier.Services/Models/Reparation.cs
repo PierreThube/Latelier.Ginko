@@ -45,7 +45,7 @@
         /// </summary>
         public string NumSerieMateriel { get; set; }
 
-        public Reparation(int id, int technicienId, int clientId, int tacheId, DateTime dateDebut, DateTime? dateFin, double? prix, string numSerieMateriel)
+        public Reparation(int id, int technicienId, int clientId, int tacheId, DateTime dateDebut, DateTime? dateFin, string numSerieMateriel)
         {
             Id = id;
             TechnicienId = technicienId;
@@ -53,7 +53,6 @@
             TacheId = tacheId;
             DateDebut = dateDebut;
             DateFin = dateFin;
-            Prix = prix;
             NumSerieMateriel = numSerieMateriel ?? throw new ArgumentNullException(nameof(numSerieMateriel));
         }
     }

@@ -1,4 +1,5 @@
 ﻿using Latelier.Services.Models;
+using Latelier.Services.Models.Enums;
 
 namespace Latelier.Services.Services
 {
@@ -30,31 +31,41 @@ namespace Latelier.Services.Services
                 new Client(2, "Bob", "Lennon", "bob.lennon@gmail.com", "06.64.32.42.00")
             };
 
+            var pieces = new [] {
+                new Piece(2, "Plaquettes de frein", 50, MaterielTypeEnum.Velo),
+                new Piece(3, "Pneu", 25, MaterielTypeEnum.Velo) 
+            };
             Taches = new List<Tache>
             {
-                new Tache(1, 15, "Affutage et fartage", 20, Models.Enums.FacturationTypeEnum.Forfait),
-                new Tache(2, 0, "Réparation skis", 1, Models.Enums.FacturationTypeEnum.TempsPasse),
-                new Tache(3, 45, "Révision annuelle", 50, Models.Enums.FacturationTypeEnum.Forfait),
-                new Tache(4, 0, "Réparation vélo", 1, Models.Enums.FacturationTypeEnum.TempsPasse),
+                new Tache(1, 15, "Affutage et fartage", 20, FacturationTypeEnum.Forfait),
+                new Tache(2, 0, "Réparation skis", 1, FacturationTypeEnum.TempsPasse)
+                    .WithPieces(new Piece(1, "Fixations", 20, MaterielTypeEnum.Ski)),
+                new Tache(3, 0, "Révision annuelle", 50, FacturationTypeEnum.Forfait),
+                new Tache(4, 0, "Réparation vélo", 1, FacturationTypeEnum.TempsPasse)
+                    .WithPieces(pieces)
             };
 
             Materiels = new List<Materiel>
             {
-                new Materiel("052413N4", Models.Enums.MaterielTypeEnum.Velo, 1),
-                new Materiel("12F45HJ", Models.Enums.MaterielTypeEnum.Ski, 1),
-                new Materiel("E6F4E3F5", Models.Enums.MaterielTypeEnum.Velo, 2),
-                new Materiel("H9S34FG7", Models.Enums.MaterielTypeEnum.Ski, 2),
+                new Materiel("052413N4", MaterielTypeEnum.Velo, 1),
+                new Materiel("12F45HJ", MaterielTypeEnum.Ski, 1),
+                new Materiel("E6F4E3F5", MaterielTypeEnum.Velo, 2),
+                new Materiel("H9S34FG7", MaterielTypeEnum.Ski, 2),
             };
 
             Reparations = new List<Reparation>
             {
-                new Reparation(1, 1, 1, 1, DateTime.Now, null, null, "052413N4")
+                new Reparation(1, 1, 1, 1, DateTime.Now, null, "052413N4")
             };
         }
 
         public static List<Reparation> GetAll() => Reparations;
 
         public static Reparation? Get(int id) => Reparations.FirstOrDefault(p => p.Id == id);
+
+        public static Materiel? GetMateriel(string numSerie) => Materiels.FirstOrDefault(m => m.NumSerie == numSerie);
+
+        public static Tache? GetTache(int id) => Taches.FirstOrDefault(m => m.Id == id);
 
         public static void Add(Reparation rep)
         {

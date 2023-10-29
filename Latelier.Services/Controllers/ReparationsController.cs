@@ -9,6 +9,8 @@ namespace Latelier.Services.Controllers
     [Route("[controller]")]
     public class ReparationsController : ControllerBase
     {
+        #region Réparations
+
         [HttpGet]
         public ActionResult<List<Reparation>> Reparations()
             => DataServices.GetAll();
@@ -36,6 +38,20 @@ namespace Latelier.Services.Controllers
         [HttpPost("Add")]
         public IActionResult SaveReparation(Reparation reparation)
         {
+            // ici par exemple on peut valider que les données envoyés sont correctes
+            if (!ValidateDatas(reparation))
+                return BadRequest();
+
+            // NB : on peut imaginer d'autres vérifications comme par exemple
+            //  - que la tache et le matériel correspondent
+            //  - que les pièces à changer correspondent au matériel
+            // etc...
+            // évidement cela n'empêche pas de faire des choses côté frontend pour s'assurer d'avoir des données correctes ici
+
+            var tache = DataServices.GetTache(reparation.TacheId);
+            reparation.Prix = tache.PrixCalcule;
+
+            // sauvegarde
             DataServices.Add(reparation);
             return CreatedAtAction(nameof(SaveReparation), new { id = reparation.Id }, reparation);
         }
@@ -59,5 +75,24 @@ namespace Latelier.Services.Controllers
             DataServices.Update(reparation);
             return NoContent();
         }
+
+        /// <summary>
+        /// Validation des données
+        /// </summary>
+        /// <param name="reparation"></param>
+        /// <returns></returns>
+        private bool ValidateDatas(Reparation reparation)
+        {
+            var materiel = DataServices.GetMateriel(reparation.NumSerieMateriel);
+            var tache = DataServices.GetTache(reparation.TacheId);
+
+            return materiel != null && tache != null;
+        }
+
+        #endregion
+
+        #region Monitoring
+
+        #endregion
     }
 }

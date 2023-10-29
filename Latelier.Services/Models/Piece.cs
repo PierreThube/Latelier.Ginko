@@ -15,7 +15,7 @@ namespace Latelier.Services.Models
         /// <summary>
         /// Nom
         /// </summary>
-        public string Name { get; set; }
+        public string Libelle { get; set; }
                 
         /// <summary>
         /// prix unitaire
@@ -30,7 +30,7 @@ namespace Latelier.Services.Models
         public Piece(int id, string name, int prix, MaterielTypeEnum materielType)
         {
             Id = id;
-            Name = name ?? throw new ArgumentNullException(nameof(name));
+            Libelle = name ?? throw new ArgumentNullException(nameof(name));
             Prix = prix;
             MaterielType = materielType;
         }
